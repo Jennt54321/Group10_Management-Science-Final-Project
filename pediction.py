@@ -99,6 +99,16 @@ mape_arima = (abs(results_df['Actual'] - results_df['ARIMA Forecast']) / results
 print(f"Exponential Smoothing Average MAPE: {mape_expo:.2f}%")
 print(f"ARIMA Average MAPE: {mape_arima:.2f}%")
 
+# 去除 2011 年 12 月的資料
+results_df_excl_dec = results_df.drop(pd.Timestamp('2011-12-01'))
+
+# 重新計算 MAPE（不包含 12 月）
+mape_expo_excl_dec = (abs(results_df_excl_dec['Actual'] - results_df_excl_dec['ExponentialSmoothing Forecast']) / results_df_excl_dec['Actual']).mean() * 100
+mape_arima_excl_dec = (abs(results_df_excl_dec['Actual'] - results_df_excl_dec['ARIMA Forecast']) / results_df_excl_dec['Actual']).mean() * 100
+
+print(f"[不含12月] Exponential Smoothing MAPE: {mape_expo_excl_dec:.2f}%")
+print(f"[不含12月] ARIMA MAPE: {mape_arima_excl_dec:.2f}%")
+
 """
 # 單點預測誤差
 mape_ex_point = abs(actual_data - ex_point_forecast) / actual_data * 100
