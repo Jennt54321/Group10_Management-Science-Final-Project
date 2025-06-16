@@ -7,7 +7,8 @@ import matplotlib.pyplot as plt
 
 #Step1: 整理資料集
 df = pd.read_csv("cleaned_output.csv")
-df = df[~df['IsReturn']]
+print(df['IsReturn'].unique())
+df = df[df['IsReturn'] == 0]
 top_product = df.groupby('Description')['Quantity'].sum().sort_values(ascending=False).index[0] #找出最熱賣的商品
 df_top = df[df['Description'] == top_product] #篩選出只有 top_product 的資料集)
 q_low, q_high = np.percentile(df_top['Quantity'], [2.5, 97.5]) 
