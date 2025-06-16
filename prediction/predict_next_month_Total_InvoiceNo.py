@@ -23,7 +23,7 @@ plt.ylim(bottom=0)
 plt.grid(True)
 plt.show()
 
-#Ste3: #開始使用 ExponentialSmoothing & ARIMA 做rollaing expanding window
+#Step3: #開始使用 ExponentialSmoothing & ARIMA 做rollaing expanding window
 all_months = monthly_orders.index 
 start_idx = all_months.get_loc('2011-04-01')
 end_idx = all_months.get_loc('2011-12-01')
@@ -51,25 +51,7 @@ for i in range(start_idx,end_idx+1):
     
     actual_values.append(actual_data)
 
-"""
-#Step4: 使用單點預測，用 2010/12-2011/11 預測 2011/12 的值
-
-train_data = monthly_orders[monthly_orders.index < pd.Timestamp("2011-12-01")]
-actual_data = monthly_orders[pd.Timestamp("2011-12-01")]
-print(len(train_data))
-
-#ExponentialSoothing
-ex_model = ExponentialSmoothing(train_data, trend='add', seasonal=None)
-ex_fit = ex_model.fit()
-ex_point_forecast = ex_fit.forecast(steps=1)[0]
-
-# SARIMAX(p,d,q)(P,D,Q,s)
-ar_model = SARIMAX(train_data, order=(1,1,1), seasonal_order=(1,1,1,12), enforce_stationarity=False, enforce_invertibility=False)
-ar_fit = ar_model.fit(disp=False)
-ar_point_forecast = ar_fit.forecast(steps=1)[0]
-"""
-
-#Step5: 製作 actual vs forecast 對照表
+#Step4: 製作 actual vs forecast 對照表
 forecast_months = all_months[start_idx:end_idx+1]
 
 results_df =  pd.DataFrame({
@@ -84,12 +66,6 @@ plt.xlabel("Month")
 plt.ylabel("Number of Orders")
 plt.grid(True)
 plt.show()
-
-"""
-# 額外標註 2011-12 單點預測（加大顏色與大小）
-plt.scatter(pd.Timestamp('2011-12-01'), ex_point_forecast,color='orange', label='ExpSmooth Point Forecast', marker='x', s=100)
-plt.scatter(pd.Timestamp('2011-12-01'), ar_point_forecast,color='green', label='ARIMA Point Forecast', marker='x', s=100)
-"""
 
 #Step5: 分別計算 MAPE
 mape_expo = (abs(results_df['Actual'] - results_df['ExponentialSmoothing Forecast']) / results_df['Actual']).mean() * 100
@@ -108,15 +84,6 @@ mape_arima_excl_dec = (abs(results_df_excl_dec['Actual'] - results_df_excl_dec['
 
 print(f"[不含12月] Exponential Smoothing MAPE: {mape_expo_excl_dec:.2f}%")
 print(f"[不含12月] ARIMA MAPE: {mape_arima_excl_dec:.2f}%")
-
-"""
-# 單點預測誤差
-mape_ex_point = abs(actual_data - ex_point_forecast) / actual_data * 100
-mape_ar_point = abs(actual_data - ar_point_forecast) / actual_data * 100
-
-print(f"2011/12 Exp. Smoothing Point Forecast MAPE (using full history): {mape_ex_point:.2f}%")
-print(f"2011/12 ARIMA Point Forecast MAPE (using full history): {mape_ar_point:.2f}%")
-"""
 
 
 
